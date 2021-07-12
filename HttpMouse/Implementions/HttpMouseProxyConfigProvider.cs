@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Primitives;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,23 +14,19 @@ namespace HttpMouse.Implementions
     sealed class HttpMouseProxyConfigProvider : IProxyConfigProvider
     {
         private volatile HttpMouseProxyConfig config = new();
-        private readonly IHttpMouseRouteProvider routeConfigProvider;
-        private readonly IHttpMouseClusterProvider clusterConfigProvider;
+        private readonly IServiceScopeFactory serviceScopeFactory;
 
         /// <summary>
         /// 内存配置提供者
         /// </summary>
         /// <param name="httpMouseClientHandler"></param>
-        /// <param name="routeConfigProvider"></param>
-        /// <param name="clusterConfigProvider"></param> 
+        /// <param name="serviceScopeFactory"></param> 
         public HttpMouseProxyConfigProvider(
             IHttpMouseClientHandler httpMouseClientHandler,
-            IHttpMouseRouteProvider routeConfigProvider,
-            IHttpMouseClusterProvider clusterConfigProvider)
+            IServiceScopeFactory serviceScopeFactory)
         {
             httpMouseClientHandler.ClientsChanged += HttpMouseClientsChanged;
-            this.routeConfigProvider = routeConfigProvider;
-            this.clusterConfigProvider = clusterConfigProvider;
+            this.serviceScopeFactory = serviceScopeFactory;
         }
 
         /// <summary>
@@ -40,8 +37,12 @@ namespace HttpMouse.Implementions
         {
             var oldConfig = this.config;
 
-            var routes = clients.Select(item => this.routeConfigProvider.Create(item)).ToArray();
-            var clusters = clients.Select(item => this.clusterConfigProvider.Create(item)).ToArray();
+            using var scope = this.serviceScopeFactory.CreateScope();
+            var routeConfigProvider = scope.ServiceProvider.GetRequiredService<IHttpMouseRouteProvider>();
+            var clusterConfigProvider = scope.ServiceProvider.GetRequiredService<IHttpMouseClusterProvider>();
+
+            var routes = clients.Select(item => routeConfigProvider.Create(item)).ToArray();
+            var clusters = clients.Select(item => clusterConfigProvider.Create(item)).ToArray();
             this.config = new HttpMouseProxyConfig(routes, clusters);
 
             oldConfig.SignalChange();

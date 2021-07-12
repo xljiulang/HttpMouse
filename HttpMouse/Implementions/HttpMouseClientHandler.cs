@@ -1,5 +1,6 @@
 ﻿using HttpMouse.Abstractions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
@@ -17,8 +18,7 @@ namespace HttpMouse.Implementions
         private const string SERVER_KEY = "ServerKey";
         private const string CLIENT_DOMAIN = "ClientDomain";
         private const string CLIENT_UP_STREAM = "ClientUpstream";
-
-        private readonly IHttpMouseClientVerifier verifier;
+        private readonly IServiceScopeFactory serviceScopeFactory;
         private readonly ILogger<HttpMouseClientHandler> logger;
         private readonly ConcurrentDictionary<string, IHttpMouseClient> clients = new();
 
@@ -31,13 +31,13 @@ namespace HttpMouse.Implementions
         /// <summary>
         /// 客户端处理者
         /// </summary>
-        /// <param name="verifier"></param> 
+        /// <param name="serviceScopeFactory"></param> 
         /// <param name="logger"></param>
         public HttpMouseClientHandler(
-            IHttpMouseClientVerifier verifier,
+            IServiceScopeFactory serviceScopeFactory,
             ILogger<HttpMouseClientHandler> logger)
         {
-            this.verifier = verifier;
+            this.serviceScopeFactory = serviceScopeFactory;
             this.logger = logger;
         }
 
@@ -65,10 +65,14 @@ namespace HttpMouse.Implementions
             var client = new HttpMouseClient(clientDomain, clientUpstream, clientKey, webSocket);
 
             // 验证客户端
-            if (await this.verifier.VerifyAsync(client) == false)
+            using (var scope = this.serviceScopeFactory.CreateScope())
             {
-                await client.CloseAsync("Key不正确");
-                return;
+                var verifier = scope.ServiceProvider.GetRequiredService<IHttpMouseClientVerifier>();
+                if (await verifier.VerifyAsync(client) == false)
+                {
+                    await client.CloseAsync("Key不正确");
+                    return;
+                }
             }
 
             // 验证连接唯一

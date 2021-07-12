@@ -56,9 +56,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 }));
 
             services
-                .AddSingleton<IHttpMouseRouteProvider, DefaultHttpMouseRouteProvider>()
-                .AddSingleton<IHttpMouseClusterProvider, DefaultHttpMouseClusterProvider>()
-                .AddSingleton<IHttpMouseClientVerifier, DefaultHttpMouseClientVerifier>()
+                .AddTransient<IHttpMouseRouteProvider, DefaultHttpMouseRouteProvider>()
+                .AddTransient<IHttpMouseClusterProvider, DefaultHttpMouseClusterProvider>()
+                .AddTransient<IHttpMouseClientVerifier, DefaultHttpMouseClientVerifier>()
 
                 .AddSingleton<IHttpMouseClientHandler, HttpMouseClientHandler>()
                 .AddSingleton<IReverseConnectionHandler, ReverseConnectionHandler>()
