@@ -27,7 +27,7 @@ namespace HttpMouse.Implementions
         /// <returns></returns>
         public virtual RouteConfig Create(IHttpMouseClient httpMouseClient)
         {
-            var domain = httpMouseClient.Domain;
+            var domain = httpMouseClient.BindDomain;
             var opt = this.options.CurrentValue;
             if (opt.Routes.TryGetValue(domain, out var setting) == false)
             {

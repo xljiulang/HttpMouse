@@ -27,8 +27,8 @@ namespace HttpMouse.Implementions
         /// <returns></returns>
         public virtual ClusterConfig Create(IHttpMouseClient httpMouseClient)
         {
-            var domain = httpMouseClient.Domain;
-            var address = httpMouseClient.Upstream.ToString();
+            var domain = httpMouseClient.BindDomain;
+            var address = httpMouseClient.ClientUri.ToString();
 
             var destinations = new Dictionary<string, DestinationConfig>
             {

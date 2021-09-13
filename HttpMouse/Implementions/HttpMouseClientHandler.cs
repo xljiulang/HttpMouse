@@ -16,8 +16,8 @@ namespace HttpMouse.Implementions
     sealed class HttpMouseClientHandler : IHttpMouseClientHandler
     {
         private const string SERVER_KEY = "ServerKey";
-        private const string CLIENT_DOMAIN = "ClientDomain";
-        private const string CLIENT_UP_STREAM = "ClientUpstream";
+        private const string BIND_DOMAIN = "BindDomain";
+        private const string CLIENT_URI = "ClientUri";
         private readonly IServiceScopeFactory serviceScopeFactory;
         private readonly ILogger<HttpMouseClientHandler> logger;
         private readonly ConcurrentDictionary<string, IHttpMouseClient> clients = new();
@@ -51,18 +51,18 @@ namespace HttpMouse.Implementions
         {
             if (context.WebSockets.IsWebSocketRequest == false ||
                 context.Request.Headers.TryGetValue(SERVER_KEY, out var keyValues) == false ||
-                context.Request.Headers.TryGetValue(CLIENT_DOMAIN, out var domainValues) == false ||
-                context.Request.Headers.TryGetValue(CLIENT_UP_STREAM, out var upSteramValues) == false ||
-                Uri.TryCreate(upSteramValues.ToString(), UriKind.Absolute, out var clientUpstream) == false)
+                context.Request.Headers.TryGetValue(BIND_DOMAIN, out var domainValues) == false ||
+                context.Request.Headers.TryGetValue(CLIENT_URI, out var clientUriValues) == false ||
+                Uri.TryCreate(clientUriValues.ToString(), UriKind.Absolute, out var clientUri) == false)
             {
                 await next();
                 return;
             }
 
-            var clientDomain = domainValues.ToString();
             var clientKey = keyValues.ToString();
+            var bindDomain = domainValues.ToString();          
             using var webSocket = await context.WebSockets.AcceptWebSocketAsync();
-            var client = new HttpMouseClient(clientDomain, clientUpstream, clientKey, webSocket);
+            var client = new HttpMouseClient(bindDomain, clientUri, clientKey, webSocket);
 
             // 验证客户端
             using (var scope = this.serviceScopeFactory.CreateScope())
@@ -76,9 +76,9 @@ namespace HttpMouse.Implementions
             }
 
             // 验证连接唯一
-            if (this.clients.TryAdd(clientDomain, client) == false)
+            if (this.clients.TryAdd(bindDomain, client) == false)
             {
-                await client.CloseAsync($"已在其它地方存在{clientDomain}的客户端实例");
+                await client.CloseAsync($"已在其它地方存在{bindDomain}的客户端实例");
                 return;
             }
 
@@ -88,7 +88,7 @@ namespace HttpMouse.Implementions
             await client.WaitingCloseAsync();
 
             this.logger.LogInformation($"{client}断开连接");
-            this.clients.TryRemove(clientDomain, out _);
+            this.clients.TryRemove(bindDomain, out _);
             this.ClientsChanged?.Invoke(this.clients.Values.ToArray());
         }
 

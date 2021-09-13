@@ -26,9 +26,9 @@ namespace HttpMouse
         /// <summary>
         /// 通过客户端绑定的域名尝试获取客户端
         /// </summary>
-        /// <param name="clientDomain">客户端绑定的域名</param>
+        /// <param name="bindDomain">客户端绑定的域名</param>
         /// <param name="value"></param>
         /// <returns></returns>
-        bool TryGetValue(string clientDomain, [MaybeNullWhen(false)] out IHttpMouseClient value);
+        bool TryGetValue(string bindDomain, [MaybeNullWhen(false)] out IHttpMouseClient value);
     }
 }

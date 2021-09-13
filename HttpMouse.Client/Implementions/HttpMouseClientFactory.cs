@@ -12,9 +12,9 @@ namespace HttpMouse.Client.Implementions
     sealed class HttpMouseClientFactory : IHttpMouseClientFactory
     {
         private const string SERVER_KEY = "ServerKey";
-        private const string CLIENT_DOMAIN = "ClientDomain";
-        private const string CLIENT_UP_STREAM = "ClientUpstream";
-      
+        private const string BIND_DOMAIN = "BindDomain";
+        private const string CLIENT_URI = "ClientUri";
+
         private readonly IOptionsMonitor<HttpMouseClientOptions> options;
 
         /// <summary>
@@ -34,14 +34,14 @@ namespace HttpMouse.Client.Implementions
         public async Task<IHttpMouseClient> CreateAsync(CancellationToken cancellationToken)
         {
             var opt = this.options.CurrentValue;
-            var uriBuilder = new UriBuilder(opt.Server);
+            var uriBuilder = new UriBuilder(opt.ServerUri);
             uriBuilder.Scheme = uriBuilder.Scheme == Uri.UriSchemeHttp ? "ws" : "wss";
 
             var webSocket = new ClientWebSocket();
             webSocket.Options.RemoteCertificateValidationCallback = delegate { return true; };
             webSocket.Options.SetRequestHeader(SERVER_KEY, opt.ServerKey);
-            webSocket.Options.SetRequestHeader(CLIENT_DOMAIN, opt.ClientDomain);
-            webSocket.Options.SetRequestHeader(CLIENT_UP_STREAM, opt.ClientUpstream.ToString());
+            webSocket.Options.SetRequestHeader(BIND_DOMAIN, opt.ServerUri.Host);
+            webSocket.Options.SetRequestHeader(CLIENT_URI, opt.ClientUri.ToString());
 
             await webSocket.ConnectAsync(uriBuilder.Uri, cancellationToken);
             return new HttpMouseClient(webSocket, opt);

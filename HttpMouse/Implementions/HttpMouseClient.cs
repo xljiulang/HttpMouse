@@ -17,30 +17,30 @@ namespace HttpMouse.Implementions
         /// <summary>
         /// 获取绑定的域名
         /// </summary>
-        public string Domain { get; }
+        public string BindDomain { get; }
 
         /// <summary>
         /// 获取上游地址
         /// </summary>
-        public Uri Upstream { get; }
+        public Uri ClientUri { get; }
 
         /// <summary>
         /// 获取输入的秘钥
         /// </summary>
-        public string? Key { get; }
+        public string? ServerKey { get; }
 
         /// <summary>
         /// 基于websocket的主连接
         /// </summary>
-        /// <param name="domain"></param>
-        /// <param name="upstream"></param>
-        /// <param name="key"></param>
+        /// <param name="bindDomain"></param>
+        /// <param name="clientUri"></param>
+        /// <param name="serverKey"></param>
         /// <param name="webSocket"></param> 
-        public HttpMouseClient(string domain, Uri upstream, string? key, WebSocket webSocket)
+        public HttpMouseClient(string bindDomain, Uri clientUri, string? serverKey, WebSocket webSocket)
         {
-            this.Domain = domain;
-            this.Upstream = upstream;
-            this.Key = key;
+            this.BindDomain = bindDomain;
+            this.ClientUri = clientUri;
+            this.ServerKey = serverKey;
             this.webSocket = webSocket;
         }
 
@@ -99,7 +99,7 @@ namespace HttpMouse.Implementions
 
         public override string ToString()
         {
-            return $"{this.Domain}->{this.Upstream}";
+            return $"{this.BindDomain}->{this.ClientUri}";
         }
     }
 }

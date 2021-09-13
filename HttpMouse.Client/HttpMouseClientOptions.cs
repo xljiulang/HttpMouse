@@ -10,29 +10,23 @@ namespace HttpMouse.Client
     public class HttpMouseClientOptions
     {
         /// <summary>
-        /// 服务器地址
+        /// 服务器Uri
+        /// 当访问服务器的这个域名或ip时，转发给ClientUri
         /// </summary>
         [AllowNull]
         [Required]
-        public Uri Server { get; set; }
+        public Uri ServerUri { get; set; }
 
         /// <summary>
-        /// 服务器密钥
+        /// 服务器连接密钥
         /// </summary>
         public string? ServerKey { get; set; }
 
         /// <summary>
-        /// 客户端上游地址
+        /// 客户端Uri
         /// </summary>
         [AllowNull]
         [Required]
-        public Uri ClientUpstream { get; set; }
-
-        /// <summary>
-        /// 映射到客户端的服务器域名或ip
-        /// </summary>
-        [AllowNull]
-        [Required]
-        public string ClientDomain { get; set; }
+        public Uri ClientUri { get; set; }
     }
 }

@@ -12,17 +12,17 @@ namespace HttpMouse
         /// <summary>
         /// 获取绑定的域名
         /// </summary>
-        string Domain { get; }
+        string BindDomain { get; }
 
         /// <summary>
         /// 获取上游地址
         /// </summary>
-        Uri Upstream { get; }
+        Uri ClientUri { get; }
 
         /// <summary>
         /// 获取输入的秘钥
         /// </summary>
-        string? Key { get; }
+        string? ServerKey { get; }
 
         /// <summary>
         /// 发送创建反向连接指令

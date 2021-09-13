@@ -117,7 +117,7 @@ namespace HttpMouse.Client.Implementions
         /// <returns></returns>
         private async Task<Stream> CreateDownConnectionAsync(Guid connectionId, CancellationToken cancellationToken)
         {
-            var server = this.options.Server;
+            var server = this.options.ServerUri;
             var endpoint = new DnsEndPoint(server.Host, server.Port);
             var socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
             await socket.ConnectAsync(endpoint, cancellationToken);
@@ -144,7 +144,7 @@ namespace HttpMouse.Client.Implementions
         /// <returns></returns>
         private async Task<Stream> CreateUpConnectionAsync(CancellationToken cancellationToken)
         {
-            var client = this.options.ClientUpstream;
+            var client = this.options.ClientUri;
             var endpoint = new DnsEndPoint(client.Host, client.Port);
             var socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
             await socket.ConnectAsync(endpoint, cancellationToken);

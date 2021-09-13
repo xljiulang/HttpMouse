@@ -36,14 +36,14 @@ namespace HttpMouse.Implementions
         /// <summary>
         /// 创建一个反向连接
         /// </summary>
-        /// <param name="clientDomain">客户端域名</param>
+        /// <param name="bindDomain">客户端域名</param>
         /// <param name="cancellation"></param>
         /// <returns></returns>
-        public async ValueTask<Stream> CreateAsync(string clientDomain, CancellationToken cancellation)
+        public async ValueTask<Stream> CreateAsync(string bindDomain, CancellationToken cancellation)
         {
-            if (this.httpMouseClientHandler.TryGetValue(clientDomain, out var httpMouseClient) == false)
+            if (this.httpMouseClientHandler.TryGetValue(bindDomain, out var httpMouseClient) == false)
             {
-                throw new Exception($"无法创建反向连接：上游{clientDomain}未连接");
+                throw new Exception($"无法创建反向连接：上游{bindDomain}未连接");
             }
 
             var connectionId = Guid.NewGuid();

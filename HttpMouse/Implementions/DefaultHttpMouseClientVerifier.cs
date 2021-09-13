@@ -28,12 +28,12 @@ namespace HttpMouse.Implementions
         public virtual ValueTask<bool> VerifyAsync(IHttpMouseClient httpMouseClient)
         {
             var opt = this.options.CurrentValue;
-            if (opt.Keys.TryGetValue(httpMouseClient.Domain, out var serverKey) == false)
+            if (opt.Keys.TryGetValue(httpMouseClient.BindDomain, out var serverKey) == false)
             {
                 serverKey = opt.DefaultKey;
             }
 
-            var result = serverKey == null || serverKey == httpMouseClient.Key;
+            var result = serverKey == null || serverKey == httpMouseClient.ServerKey;
             return ValueTask.FromResult(result);
         }
     }
