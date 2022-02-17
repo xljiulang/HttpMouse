@@ -1,4 +1,5 @@
-﻿using Yarp.ReverseProxy.Configuration;
+﻿using System.Collections.Generic;
+using Yarp.ReverseProxy.Configuration;
 
 namespace HttpMouse
 {
@@ -12,6 +13,6 @@ namespace HttpMouse
         /// </summary>
         /// <param name="httpMouseClient"></param> 
         /// <returns></returns>
-        RouteConfig Create(IHttpMouseClient httpMouseClient);
+        IEnumerable<RouteConfig> Create(IHttpMouseClient httpMouseClient);
     }
 }

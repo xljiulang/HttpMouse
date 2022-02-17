@@ -15,9 +15,9 @@ namespace HttpMouse.Implementions
         private readonly WebSocket webSocket;
 
         /// <summary>
-        /// 获取绑定的域名
+        /// 获取id
         /// </summary>
-        public string BindDomain { get; }
+        public string ClientId { get; }
 
         /// <summary>
         /// 获取上游地址
@@ -32,13 +32,13 @@ namespace HttpMouse.Implementions
         /// <summary>
         /// 基于websocket的主连接
         /// </summary>
-        /// <param name="bindDomain"></param>
+        /// <param name="clientId"></param>
         /// <param name="clientUri"></param>
         /// <param name="serverKey"></param>
         /// <param name="webSocket"></param> 
-        public HttpMouseClient(string bindDomain, Uri clientUri, string? serverKey, WebSocket webSocket)
+        public HttpMouseClient(string clientId, Uri clientUri, string? serverKey, WebSocket webSocket)
         {
-            this.BindDomain = bindDomain;
+            this.ClientId = clientId;
             this.ClientUri = clientUri;
             this.ServerKey = serverKey;
             this.webSocket = webSocket;
@@ -99,7 +99,7 @@ namespace HttpMouse.Implementions
 
         public override string ToString()
         {
-            return $"{this.BindDomain}->{this.ClientUri}";
+            return $"{this.ClientId}->{this.ClientUri}";
         }
     }
 }

@@ -12,7 +12,7 @@ namespace HttpMouse
         /// <summary>
         /// 获取绑定的域名
         /// </summary>
-        string BindDomain { get; }
+        string ClientId { get; }
 
         /// <summary>
         /// 获取上游地址

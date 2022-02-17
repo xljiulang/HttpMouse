@@ -41,7 +41,7 @@ namespace HttpMouse.Implementions
             var routeConfigProvider = scope.ServiceProvider.GetRequiredService<IHttpMouseRouteProvider>();
             var clusterConfigProvider = scope.ServiceProvider.GetRequiredService<IHttpMouseClusterProvider>();
 
-            var routes = clients.Select(item => routeConfigProvider.Create(item)).ToArray();
+            var routes = clients.SelectMany(item => routeConfigProvider.Create(item)).ToArray();
             var clusters = clients.Select(item => clusterConfigProvider.Create(item)).ToArray();
             this.config = new HttpMouseProxyConfig(routes, clusters);
 

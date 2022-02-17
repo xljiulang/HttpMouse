@@ -10,6 +10,12 @@ namespace HttpMouse
     public class HttpMouseOptions
     {
         /// <summary>
+        /// 客户端id请求头名称，默认为HttpMouse-ClientId
+        /// 当客端配置ClientId值之后，服务端使用该值做为请求头名称
+        /// </summary>
+        public string ClientIdHeaderName { get; set; } = "HttpMouse-ClientId";
+
+        /// <summary>
         /// 缺省的密钥
         /// </summary>
         public string? DefaultKey { get; set; }
@@ -26,17 +32,17 @@ namespace HttpMouse
 
 
         /// <summary>
-        /// 客户端域名的秘钥配置
+        /// 客户端id的秘钥配置
         /// </summary>
         public Dictionary<string, string> Keys { get; set; } = new();
 
         /// <summary>
-        /// 客户端域名的路由配置
+        /// 客户端id的路由配置
         /// </summary>
         public Dictionary<string, RouteSetting> Routes { get; set; } = new();
 
         /// <summary>
-        /// 客户端域名的集群配置
+        /// 客户端Id的集群配置
         /// </summary>
         public Dictionary<string, ClusterSetting> Clusters { get; set; } = new();
 

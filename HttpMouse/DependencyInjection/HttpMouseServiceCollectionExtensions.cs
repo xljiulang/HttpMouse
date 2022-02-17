@@ -2,6 +2,7 @@
 using HttpMouse.Abstractions;
 using HttpMouse.Implementions;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -45,13 +46,19 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IReverseProxyBuilder AddHttpMouse(this IServiceCollection services)
         {
-            var optionsKey = new HttpRequestOptionsKey<string>("ClientDomain");
+            var optionsKey = new HttpRequestOptionsKey<string>("ClientId");
             var builder = services
                 .AddReverseProxy()
                 .AddTransforms(ctx => ctx.AddRequestTransform(request =>
                 {
-                    var clientDomain = request.HttpContext.Request.Host.Host;
-                    request.ProxyRequest.Options.Set(optionsKey, clientDomain);
+                    var clientId = request.HttpContext.Request.Host.Host;
+                    var opt = ctx.Services.GetRequiredService<IOptionsMonitor<HttpMouseOptions>>().CurrentValue;
+                    if (request.HttpContext.Request.Headers.TryGetValue(opt.ClientIdHeaderName, out var clientIdValues))
+                    {
+                        clientId = clientIdValues.ToString();
+                    }
+
+                    request.ProxyRequest.Options.Set(optionsKey, clientId);
                     return ValueTask.CompletedTask;
                 }));
 

@@ -23,6 +23,12 @@ namespace HttpMouse.Client
         public string? ServerKey { get; set; }
 
         /// <summary>
+        /// 客户端id
+        /// 为null则使用服务器域名
+        /// </summary>
+        public string? ClientId { get; set; }
+
+        /// <summary>
         /// 客户端Uri
         /// </summary>
         [AllowNull]

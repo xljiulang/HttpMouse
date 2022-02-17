@@ -15,7 +15,7 @@ namespace HttpMouse.Implementions
     {
         private readonly IReverseConnectionHandler reverseConnectionHandler;
         private readonly ILogger<HttpMouseForwarderHttpClientFactory> logger;
-        private readonly HttpRequestOptionsKey<string> clientDomainKey = new("ClientDomain");
+        private readonly HttpRequestOptionsKey<string> clientIdOptionsKey = new("ClientId");
 
         /// <summary>
         /// 反向连接的HttpClient工厂
@@ -49,14 +49,14 @@ namespace HttpMouse.Implementions
         /// <returns></returns>
         private async ValueTask<Stream> ConnectCallback(SocketsHttpConnectionContext context, CancellationToken cancellation)
         {
-            if (context.InitialRequestMessage.Options.TryGetValue(clientDomainKey, out var clientDomain) == false)
+            if (context.InitialRequestMessage.Options.TryGetValue(clientIdOptionsKey, out var clientId) == false)
             {
-                throw new InvalidOperationException($"未设置{nameof(HttpRequestMessage)}的Options：{clientDomainKey.Key}");
+                throw new InvalidOperationException($"未设置{nameof(HttpRequestMessage)}的Options：{clientIdOptionsKey.Key}");
             }
 
             try
             {
-                return await this.reverseConnectionHandler.CreateAsync(clientDomain, cancellation);
+                return await this.reverseConnectionHandler.CreateAsync(clientId, cancellation);
             }
             catch (Exception ex)
             {

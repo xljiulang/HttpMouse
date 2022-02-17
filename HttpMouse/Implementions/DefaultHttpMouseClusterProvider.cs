@@ -27,23 +27,23 @@ namespace HttpMouse.Implementions
         /// <returns></returns>
         public virtual ClusterConfig Create(IHttpMouseClient httpMouseClient)
         {
-            var domain = httpMouseClient.BindDomain;
+            var clientId = httpMouseClient.ClientId;
             var address = httpMouseClient.ClientUri.ToString();
 
             var destinations = new Dictionary<string, DestinationConfig>
             {
-                [domain] = new DestinationConfig { Address = address }
+                [clientId] = new DestinationConfig { Address = address }
             };
 
             var opt = this.options.CurrentValue;
-            if (opt.Clusters.TryGetValue(domain, out var setting) == false)
+            if (opt.Clusters.TryGetValue(clientId, out var setting) == false)
             {
                 setting = opt.DefaultCluster;
             }
 
             return new ClusterConfig
             {
-                ClusterId = domain,
+                ClusterId = clientId,
                 Destinations = destinations,
                 HttpRequest = setting.HttpRequest,
                 HttpClient = setting.HttpClient

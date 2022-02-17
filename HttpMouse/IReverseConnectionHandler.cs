@@ -22,9 +22,9 @@ namespace HttpMouse
         /// <summary>
         /// 创建一个反向连接
         /// </summary>
-        /// <param name="bindDomain">客户端域名</param>
+        /// <param name="clientId"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        ValueTask<Stream> CreateAsync(string bindDomain, CancellationToken cancellationToken);
+        ValueTask<Stream> CreateAsync(string clientId, CancellationToken cancellationToken);
     }
 }

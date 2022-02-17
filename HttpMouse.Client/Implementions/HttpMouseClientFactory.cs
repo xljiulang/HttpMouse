@@ -11,9 +11,9 @@ namespace HttpMouse.Client.Implementions
     /// </summary>
     sealed class HttpMouseClientFactory : IHttpMouseClientFactory
     {
-        private const string SERVER_KEY = "ServerKey";
-        private const string BIND_DOMAIN = "BindDomain";
-        private const string CLIENT_URI = "ClientUri";
+        private const string SERVER_KEY = "HttpMouse-ServerKey";
+        private const string CLINET_ID = "HttpMouse-ClientId";
+        private const string CLIENT_URI = "HttpMouse-ClientUri";
 
         private readonly IOptionsMonitor<HttpMouseClientOptions> options;
 
@@ -40,7 +40,7 @@ namespace HttpMouse.Client.Implementions
             var webSocket = new ClientWebSocket();
             webSocket.Options.RemoteCertificateValidationCallback = delegate { return true; };
             webSocket.Options.SetRequestHeader(SERVER_KEY, opt.ServerKey);
-            webSocket.Options.SetRequestHeader(BIND_DOMAIN, opt.ServerUri.Host);
+            webSocket.Options.SetRequestHeader(CLINET_ID, opt.ClientId ?? opt.ServerUri.Host);
             webSocket.Options.SetRequestHeader(CLIENT_URI, opt.ClientUri.ToString());
 
             await webSocket.ConnectAsync(uriBuilder.Uri, cancellationToken);

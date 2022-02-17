@@ -15,9 +15,10 @@ namespace HttpMouse.Implementions
     /// </summary> 
     sealed class HttpMouseClientHandler : IHttpMouseClientHandler
     {
-        private const string SERVER_KEY = "ServerKey";
-        private const string BIND_DOMAIN = "BindDomain";
-        private const string CLIENT_URI = "ClientUri";
+        private const string SERVER_KEY = "HttpMouse-ServerKey";
+        private const string CLIENT_ID = "HttpMouse-ClientId";
+        private const string CLIENT_URI = "HttpMouse-ClientUri";
+
         private readonly IServiceScopeFactory serviceScopeFactory;
         private readonly ILogger<HttpMouseClientHandler> logger;
         private readonly ConcurrentDictionary<string, IHttpMouseClient> clients = new();
@@ -51,7 +52,7 @@ namespace HttpMouse.Implementions
         {
             if (context.WebSockets.IsWebSocketRequest == false ||
                 context.Request.Headers.TryGetValue(SERVER_KEY, out var keyValues) == false ||
-                context.Request.Headers.TryGetValue(BIND_DOMAIN, out var domainValues) == false ||
+                context.Request.Headers.TryGetValue(CLIENT_ID, out var clientIdValues) == false ||
                 context.Request.Headers.TryGetValue(CLIENT_URI, out var clientUriValues) == false ||
                 Uri.TryCreate(clientUriValues.ToString(), UriKind.Absolute, out var clientUri) == false)
             {
@@ -60,9 +61,9 @@ namespace HttpMouse.Implementions
             }
 
             var clientKey = keyValues.ToString();
-            var bindDomain = domainValues.ToString();          
+            var clientId = clientIdValues.ToString();
             using var webSocket = await context.WebSockets.AcceptWebSocketAsync();
-            var client = new HttpMouseClient(bindDomain, clientUri, clientKey, webSocket);
+            var client = new HttpMouseClient(clientId, clientUri, clientKey, webSocket);
 
             // 验证客户端
             using (var scope = this.serviceScopeFactory.CreateScope())
@@ -76,9 +77,9 @@ namespace HttpMouse.Implementions
             }
 
             // 验证连接唯一
-            if (this.clients.TryAdd(bindDomain, client) == false)
+            if (this.clients.TryAdd(clientId, client) == false)
             {
-                await client.CloseAsync($"已在其它地方存在{bindDomain}的客户端实例");
+                await client.CloseAsync($"已在其它地方存在{clientId}的客户端实例");
                 return;
             }
 
@@ -88,19 +89,19 @@ namespace HttpMouse.Implementions
             await client.WaitingCloseAsync();
 
             this.logger.LogInformation($"{client}断开连接");
-            this.clients.TryRemove(bindDomain, out _);
+            this.clients.TryRemove(clientId, out _);
             this.ClientsChanged?.Invoke(this.clients.Values.ToArray());
         }
 
         /// <summary>
         /// 尝试获取连接 
         /// </summary>
-        /// <param name="clientDomain"></param>
+        /// <param name="clientId"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public bool TryGetValue(string clientDomain, [MaybeNullWhen(false)] out IHttpMouseClient value)
+        public bool TryGetValue(string clientId, [MaybeNullWhen(false)] out IHttpMouseClient value)
         {
-            return this.clients.TryGetValue(clientDomain, out value);
+            return this.clients.TryGetValue(clientId, out value);
         }
     }
 }

@@ -25,24 +25,44 @@ namespace HttpMouse.Implementions
         /// </summary>
         /// <param name="httpMouseClient"></param>
         /// <returns></returns>
-        public virtual RouteConfig Create(IHttpMouseClient httpMouseClient)
+        public virtual IEnumerable<RouteConfig> Create(IHttpMouseClient httpMouseClient)
         {
-            var domain = httpMouseClient.BindDomain;
+            var clientId = httpMouseClient.ClientId;
             var opt = this.options.CurrentValue;
-            if (opt.Routes.TryGetValue(domain, out var setting) == false)
+            if (opt.Routes.TryGetValue(clientId, out var setting) == false)
             {
                 setting = opt.DefaultRoute;
             }
 
-            return new RouteConfig
+            yield return new RouteConfig
             {
-                RouteId = domain,
-                ClusterId = domain,
+                RouteId = $"{clientId}_Host_Route",
+                ClusterId = clientId,
                 CorsPolicy = setting.CorsPolicy,
                 AuthorizationPolicy = setting.AuthorizationPolicy,
                 Match = new RouteMatch
                 {
-                    Hosts = new List<string> { domain }
+                    Hosts = new List<string> { clientId }
+                }
+            };
+
+            yield return new RouteConfig
+            {
+                RouteId = $"{clientId}_Header_Route",
+                ClusterId = clientId,
+                CorsPolicy = setting.CorsPolicy,
+                AuthorizationPolicy = setting.AuthorizationPolicy,
+                Match = new RouteMatch
+                {
+                    Path = "/{**any}",
+                    Headers = new List<RouteHeader>
+                    {
+                        new RouteHeader
+                        {
+                            Name = opt.ClientIdHeaderName,
+                            Values = new List<string >{ clientId}.AsReadOnly()
+                        }
+                    }
                 }
             };
         }
