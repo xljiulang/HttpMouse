@@ -16,6 +16,11 @@ namespace HttpMouse
         public string ClientIdHeaderName { get; set; } = "HttpMouse-ClientId";
 
         /// <summary>
+        /// 客户端host请求头名称，默认为HttpMouse-ClientHost
+        /// </summary>
+        public string ClientHostHeaderName { get; set; } = "HttpMouse-ClientHost";
+
+        /// <summary>
         /// 缺省的密钥
         /// </summary>
         public string? DefaultKey { get; set; }
